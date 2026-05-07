@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTD Macro Share</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #0d0b12;
+    --surface: #13101c;
+    --border: #2a2040;
+    --accent: #c084fc;
+    --accent2: #e879f9;
+    --text: #f0e8ff;
+    --muted: #7c6f9a;
+    --success: #86efac;
+    --error: #f87171;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 16px;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 70% 10%, #3b0764 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 10% 80%, #1e1040 0%, transparent 60%);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .logo {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 800;
+    background: linear-gradient(135deg, #e9d5ff 0%, #c084fc 50%, #e879f9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .sub {
+    color: var(--muted);
+    font-size: 14px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.4;
+  }
+
+  .card-label {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-label::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  textarea {
+    width: 100%;
+    background: #0a0812;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 14px;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--muted); }
+
+  input[type="text"] {
+    width: 100%;
+    background: #0a0812;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #9333ea, #c026d3);
+    color: white;
+    box-shadow: 0 4px 20px rgba(192, 38, 211, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(192, 38, 211, 0.45);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .result-box {
+    background: #0a0812;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .result-box.show { display: flex; }
+  .result-box.success { border-color: #4ade80; }
+  .result-box.error { border-color: var(--error); color: var(--error); }
+
+  .result-link {
+    flex: 1;
+    color: var(--accent);
+    word-break: break-all;
+    cursor: pointer;
+  }
+
+  .copy-btn {
+    background: var(--border);
+    border: none;
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 6px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .copy-btn:hover { background: var(--accent); color: #0d0b12; }
+  .copy-btn.copied { background: var(--success); color: #0d0b12; }
+
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .macro-preview {
+    background: #0a0812;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+    display: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .macro-preview.show { display: block; }
+  .macro-preview .stat { color: var(--text); }
+  .macro-preview .stat span { color: var(--accent); }
+
+  .footer {
+    margin-top: 48px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .loading {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .badge {
+    display: inline-block;
+    background: rgba(192, 132, 252, 0.1);
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    margin-left: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">ZoneHub</div>
+  <h1>Macro Share</h1>
+  <p class="sub">// Noob Tower Defense · share macros instantly</p>
+</div>
+
+<div class="container">
+
+  <!-- UPLOAD -->
+  <div class="card">
+    <div class="card-label">Upload Macro</div>
+    <textarea id="jsonInput" placeholder='Paste macro JSON here... {"version":7,"actions":[...]}'></textarea>
+    <button class="btn btn-primary" onclick="uploadMacro()">
+      Generate Share Link
+    </button>
+    <div class="result-box" id="uploadResult">
+      <span class="result-link" id="shareLink"></span>
+      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy</button>
+    </div>
+  </div>
+
+  <div class="divider">or import from link</div>
+
+  <!-- IMPORT FROM LINK -->
+  <div class="card">
+    <div class="card-label">Import from Link</div>
+    <input type="text" id="linkInput" placeholder="https://YOUR_GITHUB_PAGES/m/xxxxxx">
+    <button class="btn btn-secondary" onclick="fetchMacro()">
+      Fetch &amp; Preview
+    </button>
+    <div class="macro-preview" id="macroPreview"></div>
+    <button class="btn btn-primary" id="copyJsonBtn" onclick="copyImportedJson()" style="display:none">
+      Copy JSON → Paste into Script
+    </button>
+  </div>
+
+</div>
+
+<div class="footer">
+  macros stored in your browser · nothing sent to external servers
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Storage: dùng localStorage để lưu macro, key = random id ───────────────
+const PREFIX = 'ntdmacro_'
+
+function genId() {
+  return Math.random().toString(36).slice(2, 9)
+}
+
+function saveToStorage(data) {
+  const id = genId()
+  try {
+    localStorage.setItem(PREFIX + id, JSON.stringify(data))
+    return id
+  } catch(e) {
+    return null
+  }
+}
+
+function loadFromStorage(id) {
+  try {
+    const raw = localStorage.getItem(PREFIX + id)
+    return raw ? JSON.parse(raw) : null
+  } catch(e) {
+    return null
+  }
+}
+
+// ─── Upload ──────────────────────────────────────────────────────────────────
+function uploadMacro() {
+  const raw = document.getElementById('jsonInput').value.trim()
+  if (!raw) { showToast('Paste macro JSON first.'); return }
+
+  let data
+  try { data = JSON.parse(raw) } catch(e) {
+    showToast('Invalid JSON — check the format.'); return
+  }
+  if (!data.actions || !Array.isArray(data.actions) || data.actions.length === 0) {
+    showToast('No actions found in JSON.'); return
+  }
+
+  const id = saveToStorage(data)
+  if (!id) { showToast('Storage full — clear browser data.'); return }
+
+  const link = location.origin + location.pathname + '#' + id
+  const box = document.getElementById('uploadResult')
+  const linkEl = document.getElementById('shareLink')
+  linkEl.textContent = link
+  box.className = 'result-box show success'
+  showToast('Link generated! Copy and share it.')
+}
+
+function copyLink() {
+  const link = document.getElementById('shareLink').textContent
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById('copyBtn')
+    btn.textContent = 'Copied!'
+    btn.classList.add('copied')
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied') }, 2000)
+  })
+}
+
+// ─── Fetch ───────────────────────────────────────────────────────────────────
+let importedJson = null
+
+function fetchMacro() {
+  const input = document.getElementById('linkInput').value.trim()
+  let id = null
+
+  if (input.includes('#')) {
+    id = input.split('#').pop()
+  } else {
+    id = input
+  }
+
+  if (!id) { showToast('Paste a share link first.'); return }
+
+  const data = loadFromStorage(id)
+  if (!data) {
+    showToast('Link not found or expired.')
+    return
+  }
+
+  importedJson = JSON.stringify(data)
+
+  // Hiển thị preview
+  const actions = data.actions
+  const types = {}
+  actions.forEach(a => { types[a.type] = (types[a.type] || 0) + 1 })
+
+  const preview = document.getElementById('macroPreview')
+  preview.innerHTML = `
+    <div class="stat">Actions: <span>${actions.length}</span></div>
+    <div class="stat">Place: <span>${types.place || 0}</span> · Upgrade: <span>${types.upgrade || 0}</span> · Sell: <span>${types.sell || 0}</span></div>
+    <div class="stat">Version: <span>${data.version || '?'}</span></div>
+  `
+  preview.classList.add('show')
+  document.getElementById('copyJsonBtn').style.display = 'block'
+  showToast('Macro loaded! Copy JSON to import into script.')
+}
+
+function copyImportedJson() {
+  if (!importedJson) return
+  navigator.clipboard.writeText(importedJson).then(() => {
+    const btn = document.getElementById('copyJsonBtn')
+    btn.textContent = '✓ Copied! Now paste into Import ← Paste JSON'
+    setTimeout(() => { btn.textContent = 'Copy JSON → Paste into Script' }, 2500)
+  })
+}
+
+// ─── Auto load từ hash ───────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const hash = location.hash.slice(1)
+  if (hash) {
+    document.getElementById('linkInput').value = location.href
+    fetchMacro()
+  }
+})
+
+// ─── Toast ───────────────────────────────────────────────────────────────────
+let toastTimer
+function showToast(msg) {
+  const el = document.getElementById('toast')
+  el.textContent = msg
+  el.classList.add('show')
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500)
+}
+</script>
+</body>
+</html>
